@@ -96,8 +96,8 @@ const fetchRandomDogIMG = () => {
     })
 }
 
-// Execution
-document.querySelector('#generate').addEventListener('click', generateDoggo)
+// Generate Doggo
+const generateBtn = document.querySelector('#generate').addEventListener('click', generateDoggo)
 
 let state;
 
@@ -112,15 +112,12 @@ function generateDoggo() {
     funFact: document.querySelector('#more-info'),
     keyFactName: document.querySelector('#keyfact_dog-name'),
   }
-
-  const dog = new Dog();
-  dog.assignInfo();
   
-  const x = fetchRandomDogIMG(dog.setImage)
-  
-  x.then(data => {
+  fetchRandomDogIMG().then(data => {
+    const dog = new Dog();
     const imgUrl = data.message;
-
+  
+    dog.assignInfo();
     dog.setImage(imgUrl);
 
     const { name, gender, age, likes, dislikes, funFact, image } = dog
