@@ -136,3 +136,14 @@ function generateDoggo() {
     document.querySelector('#adopt').disabled = false;
   })
 }
+
+// Expandable Card
+const expandCard = ({ target }) => {
+  if (target.classList.contains('expandable')) {
+    const expandableContent = target.querySelector('.expandable_content');
+
+    expandableContent.classList.toggle('expandable_content--show')
+  }
+}
+
+const cardsContainer = document.querySelector('#cards').addEventListener('click', expandCard)
