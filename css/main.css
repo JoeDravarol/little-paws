@@ -71,10 +71,19 @@ article {
   max-width: 500px;
 }
 
+article img {
+  object-fit: cover;
+  display: block;
+}
+
 .dog-info {
   margin: 0 auto;
   background: #fff;
   padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 500px;
 }
 
 .dog-info h2 {
@@ -117,9 +126,11 @@ article button {
     max-width: 1000px;
   }
 
+  article img {
+    min-width: 500px;
+  }
+
   .dog-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    min-width: 500px;
   }
 }
