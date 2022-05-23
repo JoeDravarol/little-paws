@@ -18,6 +18,7 @@ class Dog {
     this.dislikes = '';
     this.funFact = '';
     this.image = '';
+    this.breed = '';
   }
 
   // Private Method
@@ -86,6 +87,10 @@ class Dog {
   setImage(url) {
     this.image = url;
   }
+
+  setBreed(breed) {
+    this.breed = breed;
+  }
 }
 
 const fetchRandomDogIMG = () => {
@@ -96,9 +101,21 @@ const fetchRandomDogIMG = () => {
     })
 }
 
+const extractBreed = (url) => {
+  // Example: "terrier-welsh"
+  const [ rawBreedString ] = url.split('/').slice(-2);
+  const capitalizeBreed = rawBreedString.split('-').map(word =>  {
+    const lower = word.toLowerCase();
+    return word.charAt(0).toUpperCase() + lower.slice(1)
+  }).join(' ')
+
+  return capitalizeBreed
+}
+
 // Generate Doggo
 const generateBtn = document.querySelector('#generate').addEventListener('click', generateDoggo)
 
+// Store Current Dog
 let state;
 
 function generateDoggo() {
@@ -111,14 +128,17 @@ function generateDoggo() {
     dogDislikes: document.querySelector('#dislikes'),
     funFact: document.querySelector('#more-info'),
     keyFactName: document.querySelector('#keyfact_dog-name'),
+    adoptBtn: document.querySelector('#adopt')
   }
   
   fetchRandomDogIMG().then(data => {
     const dog = new Dog();
     const imgUrl = data.message;
+    const breed = extractBreed(imgUrl)
   
     dog.assignInfo();
     dog.setImage(imgUrl);
+    dog.setBreed(breed)
 
     const { name, gender, age, likes, dislikes, funFact, image } = dog
     
@@ -132,8 +152,11 @@ function generateDoggo() {
     eventHandler.funFact.textContent = funFact;
     eventHandler.keyFactName.textContent = name;
 
+    // Store Current Dog
+    state = dog;
+
     // Enabled Adopt button
-    document.querySelector('#adopt').disabled = false;
+    eventHandler.adoptBtn.disabled = false;
   })
 }
 
@@ -147,3 +170,43 @@ const expandCard = ({ target }) => {
 }
 
 const cardsContainer = document.querySelector('#cards').addEventListener('click', expandCard)
+
+// Adopt Doggo
+const adoptBtn = document.querySelector('#adopt');
+
+adoptBtn.addEventListener('click', adoptDoggo);
+
+function adoptDoggo() {
+  const cardsContainer = document.querySelector('.cards');
+  adoptBtn.disabled = true;
+
+  // Render Card 
+  cardsContainer.insertAdjacentHTML('beforeend', createCardComponent())
+}
+
+function createCardComponent() {
+  const [_, gender] = state.gender.split('-');
+
+  const markUp = `
+    <li class="card expandable">
+      <header class="card-header">
+        <img src="${state.image}" alt="Picture of doggo">
+        <div class="info">
+          <h3 class="dog-name">${state.name}</h3>
+          <span>${state.breed}</span>
+          <span>${gender}</span>
+        </div>
+      </header>
+      <section class="card-content expandable_content">
+        <ul>
+          <li>${state.age}</li>
+          <li>${state.likes}</li>
+          <li>${state.dislikes}</li>
+          <li>${state.funFact}</li>
+        </ul>
+      </section>
+    </li> 
+  `
+
+  return markUp;
+}
