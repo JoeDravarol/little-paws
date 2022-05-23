@@ -6,12 +6,44 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif&family=Pacifico&family=Roboto&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./css/main.css">
 
   <title>Little Paws</title>
 </head>
 
 <body>
+  <h1>
+    Little Paws
+    <img src="./assets/images/icons8-pawprint-64.png" alt="Little Paws Logo">
+  </h1>
+
+  <section>
+    <article>
+      <img src="http://placecorgi.com/500/500" alt="Good boy">
+
+      <div class="dog-info">
+        <h2 class="dog-name">Wolfie</h2>
+
+        <h3>Key facts about <span id="keyfact_dog-name">Wolfie</span></h3>
+
+        <ul>
+          <li id="gender">Gender - Male</li>
+          <li id="age">Age - 3</li>
+          <li id="likes">Likes - Bacon, Socks</li>
+          <li id="dislikes">Dislikes - Baths, Firework</li>
+          <li id="more-info">Fun fact - Doesn't actually know their own name, just likes your voice.</li>
+        </ul>
+
+        <button class="button" disabled>Adopt</button>
+      </div>
+    </article>
+
+    <button id="generate" class="button button-generate">Find your best friend</button>
+  </section>
 
   <script src="./javascript/main.js"></script>
 </body>
