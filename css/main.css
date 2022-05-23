@@ -75,6 +75,7 @@ h1 img {
 
 article {
   margin: 0 auto;
+  padding: 0 15px;
   width: 100%;
   max-width: 500px;
 }
@@ -82,22 +83,23 @@ article {
 article img {
   object-fit: cover;
   display: block;
+  height: 300px;
 }
 
 .dog-info {
   margin: 0 auto;
   background: #fff;
-  padding: 50px;
+  padding: 25px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 500px;
+  min-height: 400px;
 }
 
 .dog-info h2 {
   font-size: 2.5rem;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
 .dog-info h3 {
@@ -195,9 +197,25 @@ article button {
   grid-row-end: span 2;
 }
 
+@media only screen and (min-width: 450px) {
+  article img {
+    height: 500px;
+  }
+
+  .dog-info {
+    padding: 50px;
+    min-height: 470px;
+  }
+
+  .dog-info h2 {
+    margin-bottom: 30px;
+  }
+}
+
 @media only screen and (min-width: 1024px) {
   article {
     display: flex;
+    padding: initial;
     max-width: 1000px;
   }
 
