@@ -93,6 +93,35 @@ class Dog {
   }
 }
 
+class BestFriends {
+  // Private variables
+  #localStorageKey;
+
+  constructor() {
+    this.#localStorageKey = 'bestFriends';
+    this.collections = this.#initBestFriends();
+  }
+
+  // Private Method
+
+  #initBestFriends() {
+    return JSON.parse( localStorage.getItem(this.#localStorageKey) ) || [];
+  }
+
+  #updateLocalStorage(data) {
+    localStorage.setItem(this.#localStorageKey, JSON.stringify(data));
+  }
+
+  // Public Method
+
+  updateCollections(data) {
+    const newCollections = [...this.collections, data];
+    this.collections = newCollections
+
+    this.#updateLocalStorage(newCollections)
+  }
+}
+
 const fetchRandomDogIMG = () => {
   return fetch(API_URL)
     .then(res => res.json())
@@ -117,6 +146,7 @@ const generateBtn = document.querySelector('#generate').addEventListener('click'
 
 // Store Current Dog
 let state;
+const adoptedBestFriends = new BestFriends();
 
 function generateDoggo() {
   const eventHandler = {
@@ -179,30 +209,32 @@ adoptBtn.addEventListener('click', adoptDoggo);
 function adoptDoggo() {
   const cardsContainer = document.querySelector('.cards');
   adoptBtn.disabled = true;
+  
+  adoptedBestFriends.updateCollections(state);
 
   // Render Card 
-  cardsContainer.insertAdjacentHTML('beforeend', createCardComponent())
+  cardsContainer.insertAdjacentHTML('beforeend', createCardComponent(state))
 }
 
-function createCardComponent() {
-  const [_, gender] = state.gender.split('-');
+function createCardComponent(data) {
+  const [_, gender] = data.gender.split('-');
 
   const markUp = `
     <li class="card expandable">
       <header class="card-header">
-        <img src="${state.image}" alt="Picture of doggo">
+        <img src="${data.image}" alt="Picture of doggo">
         <div class="info">
-          <h3 class="dog-name">${state.name}</h3>
-          <span>${state.breed}</span>
+          <h3 class="dog-name">${data.name}</h3>
+          <span>${data.breed}</span>
           <span>${gender}</span>
         </div>
       </header>
       <section class="card-content expandable_content">
         <ul>
-          <li>${state.age}</li>
-          <li>${state.likes}</li>
-          <li>${state.dislikes}</li>
-          <li>${state.funFact}</li>
+          <li>${data.age}</li>
+          <li>${data.likes}</li>
+          <li>${data.dislikes}</li>
+          <li>${data.funFact}</li>
         </ul>
       </section>
     </li> 
@@ -210,3 +242,10 @@ function createCardComponent() {
 
   return markUp;
 }
+
+// Initial render of Best Friends;
+adoptedBestFriends.collections.forEach(doggo => {
+  const cardsContainer = document.querySelector('.cards');
+
+  cardsContainer.insertAdjacentHTML('beforeend', createCardComponent(doggo))
+})
