@@ -11,12 +11,12 @@ const DOG_INFO = {
 
 class Dog {
   constructor() {
-    this.name = '';
-    this.gender = '';
-    this.age = '';
-    this.likes = '';
-    this.dislikes = '';
-    this.funFact = '';
+    this.gender = 'Gender - ' + this.#generateGender();
+    this.name = this.#generateName();
+    this.age = 'Age - ' + this.#generateAge();
+    this.likes = 'Likes - ' + this.#generateLikes();
+    this.dislikes = 'Dislikes - ' + this.#generateDislikes();
+    this.funFact = 'Fun Fact - ' + this.#generateFunFact();
     this.image = '';
     this.breed = '';
   }
@@ -46,10 +46,11 @@ class Dog {
   }
 
   #generateName() {
-    if (this.gender.toLowerCase === 'male') {
+    const gender = this.gender.toLowerCase().split('-')[1].trim();
+
+    if (gender === 'male') {
       return DOG_INFO.mNames[ this.#generateRandomNum(DOG_INFO.mNames.length) ]
     } 
-
     return DOG_INFO.fNames[ this.#generateRandomNum(DOG_INFO.mNames.length) ]
   }
 
@@ -74,15 +75,6 @@ class Dog {
   }
 
   // Public Method
-
-  assignInfo() {
-    this.name = this.#generateName();
-    this.gender = 'Gender - ' + this.#generateGender();
-    this.age = 'Age - ' + this.#generateAge();
-    this.likes = 'Likes - ' + this.#generateLikes();
-    this.dislikes = 'Dislikes - ' + this.#generateDislikes();
-    this.funFact = 'Fun Fact - ' + this.#generateFunFact();
-  }
 
   setImage(url) {
     this.image = url;
@@ -122,16 +114,9 @@ class BestFriends {
   }
 }
 
-const fetchRandomDogIMG = () => {
-  return fetch(API_URL)
-    .then(res => res.json())
-    .catch(err => {
-      console.error(`Error: ${err}`)
-    })
-}
-
+// General Helper Function
 const extractBreed = (url) => {
-  // Example: "terrier-welsh"
+  // Example: "terrier-welsh", "shiba"
   const [ rawBreedString ] = url.split('/').slice(-2);
   const capitalizeBreed = rawBreedString.split('-').map(word =>  {
     const lower = word.toLowerCase();
@@ -141,81 +126,15 @@ const extractBreed = (url) => {
   return capitalizeBreed
 }
 
-// Generate Doggo
-const generateBtn = document.querySelector('#generate').addEventListener('click', generateDoggo)
-
-// Store Current Dog
-let state;
-const adoptedBestFriends = new BestFriends();
-
-function generateDoggo() {
-  const eventHandler = {
-    dogImg: document.querySelector('#dog-img'),
-    dogName: document.querySelector('#dog-name'),
-    dogGender: document.querySelector('#gender'),
-    dogAge: document.querySelector('#age'),
-    dogLikes: document.querySelector('#likes'),
-    dogDislikes: document.querySelector('#dislikes'),
-    funFact: document.querySelector('#more-info'),
-    keyFactName: document.querySelector('#keyfact_dog-name'),
-    adoptBtn: document.querySelector('#adopt')
-  }
-  
-  fetchRandomDogIMG().then(data => {
-    const dog = new Dog();
-    const imgUrl = data.message;
-    const breed = extractBreed(imgUrl)
-  
-    dog.assignInfo();
-    dog.setImage(imgUrl);
-    dog.setBreed(breed)
-
-    const { name, gender, age, likes, dislikes, funFact, image } = dog
-    
-    // Update DOM/HTML
-    eventHandler.dogImg.src = image;
-    eventHandler.dogName.textContent = name;
-    eventHandler.dogGender.textContent = gender;
-    eventHandler.dogAge.textContent = age;
-    eventHandler.dogLikes.textContent = likes;
-    eventHandler.dogDislikes.textContent = dislikes;
-    eventHandler.funFact.textContent = funFact;
-    eventHandler.keyFactName.textContent = name;
-
-    // Store Current Dog
-    state = dog;
-
-    // Enabled Adopt button
-    eventHandler.adoptBtn.disabled = false;
-  })
+const fetchRandomDogIMG = () => {
+  return fetch(API_URL)
+    .then(res => res.json())
+    .catch(err => {
+      console.error(`Error: ${err}`)
+    })
 }
 
-// Expandable Card
-const expandCard = ({ target }) => {
-  if (target.classList.contains('expandable')) {
-    const expandableContent = target.querySelector('.expandable_content');
-
-    expandableContent.classList.toggle('expandable_content--show')
-  }
-}
-
-const cardsContainer = document.querySelector('#cards').addEventListener('click', expandCard)
-
-// Adopt Doggo
-const adoptBtn = document.querySelector('#adopt');
-
-adoptBtn.addEventListener('click', adoptDoggo);
-
-function adoptDoggo() {
-  const cardsContainer = document.querySelector('.cards');
-  adoptBtn.disabled = true;
-  
-  adoptedBestFriends.updateCollections(state);
-
-  // Render Card 
-  cardsContainer.insertAdjacentHTML('beforeend', createCardComponent(state))
-}
-
+// UI Helper
 function createCardComponent(data) {
   const [_, gender] = data.gender.split('-');
 
@@ -243,9 +162,91 @@ function createCardComponent(data) {
   return markUp;
 }
 
+const renderCardComponent = (htmlMarkup) => {
+  const cardsContainer = document.querySelector('#cards');
+
+  cardsContainer.insertAdjacentHTML('beforeend', htmlMarkup)
+}
+
+const renderDogInfo = (info) => {
+  const eventHandler = {
+    dogImg: document.querySelector('#dog-img'),
+    dogName: document.querySelector('#dog-name'),
+    dogGender: document.querySelector('#gender'),
+    dogAge: document.querySelector('#age'),
+    dogLikes: document.querySelector('#likes'),
+    dogDislikes: document.querySelector('#dislikes'),
+    funFact: document.querySelector('#more-info'),
+    keyFactName: document.querySelector('#keyfact_dog-name'),
+    adoptBtn: document.querySelector('#adopt')
+  }
+
+  const { name, gender, age, likes, dislikes, funFact, image } = info;
+  
+  // Set DOM/HTML
+  eventHandler.dogImg.src = image;
+  eventHandler.dogName.textContent = name;
+  eventHandler.dogGender.textContent = gender;
+  eventHandler.dogAge.textContent = age;
+  eventHandler.dogLikes.textContent = likes;
+  eventHandler.dogDislikes.textContent = dislikes;
+  eventHandler.funFact.textContent = funFact;
+  eventHandler.keyFactName.textContent = name;
+
+  // Enabled Adopt button
+  eventHandler.adoptBtn.disabled = false;
+}
+
+// Events helper
+const handleExpandCard = ({ target }) => {
+  if (target.classList.contains('expandable')) {
+    const expandableContent = target.querySelector('.expandable_content');
+
+    expandableContent.classList.toggle('expandable_content--show')
+  }
+}
+
+function handleAdoptDoggo() {
+  // Prevent adopting same dog
+  adoptBtn.disabled = true;
+  
+  adoptedBestFriends.updateCollections(state);
+
+  renderCardComponent( createCardComponent(state) )
+}
+
+function handleGenerateDoggo() {
+  fetchRandomDogIMG().then(data => {
+    const dog = new Dog();
+    const imgUrl = data.message;
+    const breed = extractBreed(imgUrl);
+  
+    dog.setImage(imgUrl);
+    dog.setBreed(breed)
+    
+    // Store Current Dog
+    state = dog;
+
+    renderDogInfo(state)
+  })
+}
+
+// Global states
+let state;
+const adoptedBestFriends = new BestFriends();
+
+// Event Handling
+const generateBtn = document.querySelector('#generate');
+const cardsContainer = document.querySelector('#cards');
+const adoptBtn = document.querySelector('#adopt');
+
+generateBtn.addEventListener('click', handleGenerateDoggo);
+adoptBtn.addEventListener('click', handleAdoptDoggo);
+cardsContainer.addEventListener('click', handleExpandCard);
+
 // Initial render of Best Friends;
 adoptedBestFriends.collections.forEach(doggo => {
-  const cardsContainer = document.querySelector('.cards');
-
-  cardsContainer.insertAdjacentHTML('beforeend', createCardComponent(doggo))
+  renderCardComponent( createCardComponent(doggo) );
 })
+
+// git commit -m "Implement: persist adopted dogs data"
